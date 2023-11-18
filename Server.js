@@ -6,7 +6,7 @@ const cors = require("cors")
 app.use(cors())
 mongoose.connect("mongodb+srv://anirudhkulkarni9094:TRb8AwPW6444ymuh@mindwellpro.h2ryfbt.mongodb.net/?retryWrites=true&w=majority").then(console.log("Connected successfully")).catch(Err=>console.log(Err))
 app.use(express.json())
-app.get("/", async (req , res)=>{
+app.get("/UserResponse", async (req , res)=>{
     const data = await UserResponseModel.find({});
     res.status(200).json({
         DataLength : data.length,
