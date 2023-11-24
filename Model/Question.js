@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const QuestionSchema = mongoose.Schema({
     Question : {
-        type : "String",
+        type : String,
         required: true
     },
     Category : {

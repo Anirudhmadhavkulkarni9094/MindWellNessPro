@@ -22,7 +22,7 @@ app.get("/UserResponse", async (req , res)=>{
 app.get("/UserResponse/:mail", async (req, res) => {
   const mail  = req.params.mail; // Access the mail parameter from the request
   try {
-    const data = await UserResponseModel.find({ email: mail });
+    const data = await UserResponseModel.find({ email: mail.toLowerCase() });
     res.json(data)
   } catch (error) {
     console.error('Error fetching user responses:', error.message);
@@ -39,7 +39,7 @@ app.post('/UserResponse', async (req, res) => {
       // Assuming 'response' is an array of objects containing 'response' and 'text'
       const newResponse = {
         name: name,
-        email: email,
+        email: email.toLowerCase(),
         age: age,
         responses: responses,
         questions : questions
@@ -92,8 +92,8 @@ app.get('/questions', async (req, res) => {
 // Example of adding a question
 app.post('/questions', async (req, res) => {
   try {
-    const { question  , category} = req.body; // Assuming you pass the question in the request body
-    const newQuestion = await QuestionModel.create({ Question: question  , Category : category});
+    const { Question  , Category} = req.body; // Assuming you pass the question in the request body
+    const newQuestion = await QuestionModel.create({ Question: Question  , Category : Category});
     res.status(201).json(newQuestion);
   } catch (err) {
     console.error('Error adding question:', err);
