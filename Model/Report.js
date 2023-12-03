@@ -8,13 +8,24 @@ const reportSchema = mongoose.Schema({
         required: true
     },
     name : {
-        type : String
+        type : String,
+        required: true
     },
     email : {
         type : String,
+        required: true
     },
-    data : {
-        type : [String]
+    suggestions : {
+        type  :String,
+        required: true
+    },
+    sentiment : {
+        type : String,
+        required: true
+    },
+    score : {
+        type : Number,
+        required: true
     }
 })
 
