@@ -60,28 +60,47 @@ app.post('/UserResponse', async (req, res) => {
       responses: responses,
       questions: questions
     };
+
+    // Save user response to the database
     const newData = await UserResponseModel.create(newResponse);
 
     // Making a GET request to sentiment analysis service after saving the user response
-    axios.get(`https://sentimentanalysis-o04m.onrender.com/senti/sentimentAnalysis/${email}`)
+    axios.get(`https://sentimentanalysis-o04m.onrender.com/senti/sentimentAnalysis/1/${email}`)
       .then(sentimentResponse => {
-       const {'unique id': uniqueId, name , email , suggestions,sentiment , score , status} = sentimentResponse.data;
+        const {
+          'unique id': uniqueId,
+          name,
+          email,
+          suggestions,
+          sentiments_scores,
+          status
+        } = sentimentResponse.data;
+
+        // Construct sentiment object from the provided scores
+        const sentimentScores = sentiments_scores.map(sentiment => ({
+          label: sentiment.label,
+          score: sentiment.score
+        }));
+
         const newReport = new reportModel({
           uniqueId: uniqueId,
-          name:name,
-          email : email,
-          suggestions : suggestions , 
-          sentiment : sentiment,
-          score : score , 
-          status : status
-        })
-        newReport.save();
+          name: name,
+          email: email,
+          suggestions: suggestions,
+          sentiment_scores: sentimentScores, // Use sentiment_scores field
+          status: status
+        });
 
+        // Save sentiment analysis report to the database
+        return newReport.save();
+      })
+      .then(() => {
+        res.status(201).json({ message: 'Data added successfully', data: newData });
       })
       .catch(error => {
-        console.error('Error fetching sentiment analysis:', error);
+        console.error('Error fetching or saving sentiment analysis report:', error);
+        res.status(500).json({ message: 'Error processing sentiment analysis' });
       });
-    res.status(201).json({ message: 'Data added successfully', data: newData });
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ message: 'Internal server error' });
@@ -90,22 +109,17 @@ app.post('/UserResponse', async (req, res) => {
 
 app.post('/getReport', async (req, res) => {
   try {
-    
     const { uniqueId , email} = req.body;
-    
-    // Assuming 'reportModel' represents your MongoDB model for reports
-    const report = await reportModel.find({ $and: [{ uniqueId: uniqueId }, { email: email.toLowerCase() }] });
-
-
-    
-    if (!report) {
-      return res.status(404).json({ message: 'Report not found' });
+    const report = await reportModel.findOne({ $and: [{ uniqueId: uniqueId }, { email: email.toLowerCase() }] });
+    if (report == null) {
+      console.log("report not found")
+      return res.status(200).json({ data: 'Report not found' });
     }
-
-    res.status(200).json({ report });
+   
+    res.status(200).json({ data :  report });
   } catch (error) {
     console.error('Error fetching report:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(404).json({ data : 'Internal server error' });
   }
 });
 
@@ -114,6 +128,21 @@ app.delete("/deleteAllReports" , async (req,res)=>{
 
   reportModel.deleteMany({}).then(() => {
     console.log('All records deleted successfully');
+    res.status(200).json({
+      message : "all records deleted"
+    })
+  })
+  .catch((error) => {
+    console.error('Error deleting records:', error);
+  });
+})
+app.delete("/deleteAllResponse" , async (req,res)=>{
+
+  UserResponseModel.deleteMany({}).then(() => {
+    console.log('All records deleted successfully');
+    res.status(200).json({
+      message : "all records deleted"
+    })
   })
   .catch((error) => {
     console.error('Error deleting records:', error);
@@ -126,21 +155,9 @@ app.delete("/deleteAllReports" , async (req,res)=>{
   app.post("/reports/:mail" , async (req, res) => {
     const userEmailAddress = req.params.mail; // Replace this with the user's email
     const result = await sendEmailWithCode(userEmailAddress)
-    // const newData = new reportModel({
-    //   uniqueId : result.code,
-    //   name : "Anirudh",
-    //   email : "Anirudhkulkarni9094@gmail.com"
-    // })
-
-    // try{
-    //   newData.save();
       res.status(200).json({
         UniqueId : result.code
       })
-    // }
-    // catch(err){
-    //   res.send(err);
-    // }
 });
 
 

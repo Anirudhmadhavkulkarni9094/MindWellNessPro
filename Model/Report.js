@@ -1,34 +1,32 @@
-const express = require("express")
-const mongoose = require("mongoose");
-
+const mongoose = require("mongoose")
 
 const reportSchema = mongoose.Schema({
     uniqueId: {
-        type : String,
+        type: String,
         required: true
     },
-    name : {
-        type : String,
+    name: {
+        type: String,
         required: true
     },
-    email : {
-        type : String,
+    email: {
+        type: String,
         required: true
     },
-    suggestions : {
-        type  :String,
+    suggestions: {
+        type: String,
         required: true
     },
-    sentiment : {
-        type : String,
-        required: true
-    },
-    score : {
-        type : Number,
+    sentiment_scores: [{
+        label: String,
+        score: Number
+    }],
+    status: {
+        type: Number,
         required: true
     }
-})
+});
 
-const reportModel = mongoose.model("Report" , reportSchema);
+const reportModel = mongoose.model("Report", reportSchema);
 
-module.exports = reportModel
+module.exports = reportModel;
