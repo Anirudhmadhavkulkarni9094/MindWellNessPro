@@ -32,6 +32,13 @@ app.get("/UserResponse/:mail", async (req, res) => {
   }
 });
 
+app.get("/getReports/:mail/:id" ,  async (req , res)=>{
+  const mail = req.params.mail;
+  const uniqueId  = req.params.id;
+const report = await reportModel.findOne({ $and: [{ uniqueId: uniqueId }, { email: mail.toLowerCase() }] });
+  res.send(report.sentiment_scores);
+})
+
 
 app.delete("/UserResponse/:id", async (req, res) => {
   const id = req.params.id;
@@ -63,6 +70,7 @@ app.post('/UserResponse', async (req, res) => {
 
     // Save user response to the database
     const newData = await UserResponseModel.create(newResponse);
+    newData.save();
 
     // Making a GET request to sentiment analysis service after saving the user response
     axios.get(`https://sentimentanalysis-o04m.onrender.com/senti/sentimentAnalysis/1/${email}`)
