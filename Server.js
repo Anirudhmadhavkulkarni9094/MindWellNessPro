@@ -74,7 +74,7 @@ app.post('/UserResponse', async (req, res) => {
     newData.save();
 
     // Making a GET request to sentiment analysis service after saving the user response
-    axios.get(`https://sentimentanalysis-o04m.onrender.com/senti/sentimentAnalysis/1/${email}`)
+    axios.get(`https://sentimentanalysis-rdb8.onrender.com/senti/sentimentAnalysis/0/${email}`)
       .then(sentimentResponse => {
         const {
           'unique id': uniqueId,
@@ -131,6 +131,9 @@ app.post('/getReport', async (req, res) => {
     res.status(404).json({ data : 'Internal server error' });
   }
 });
+
+
+
 
 
 app.delete("/deleteAllReports" , async (req,res)=>{
@@ -316,9 +319,37 @@ app.post('/blog-posts/:id/comment', getBlogPost, async (req, res) => {
     }
 });
 
-// Increment likes for a blog post
 
 
+app.get("/getReport" , async (req , res)=>{
+  try{
+    const reports = await reportModel.find({}); 
+    res.status(200).json({
+      message : "data fetched successfully",
+      data : reports
+    })
+  }
+  catch(Err){
+    res.status(401).json({
+      message : "Data cannot be fetched"
+    })
+  }
+})
+
+app.delete("/deleteReport/:id", async (req, res)=>{
+  try{
+  const report = await reportModel.findOneAndDelete({uniqueId : req.params.id});
+  res.status(201).json({
+    message : "data deleted successfully",
+    data : report
+  })
+}
+catch(err){
+  res.json({
+    message : err
+  })
+}
+})
 
 app.listen(3001, ()=>{
     console.log("port running at 3001")
