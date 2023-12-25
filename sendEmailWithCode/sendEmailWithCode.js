@@ -11,7 +11,7 @@ function generateUniqueCode(length) {
 }
 
 const email = 'mindwellnesspro@gmail.com';
-const password = 'suuq zwnd iiiy wtam';
+const password = 'kqrh nhlk ipdf qrzi';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',

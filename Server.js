@@ -13,6 +13,7 @@ app.use(cors())
 
 mongoose.connect("mongodb+srv://anirudhkulkarni9094:TRb8AwPW6444ymuh@mindwellpro.h2ryfbt.mongodb.net/?retryWrites=true&w=majority").then(console.log("Connected successfully")).catch(Err=>console.log(Err))
 app.use(express.json())
+
 app.get("/UserResponse", async (req , res)=>{
     const data = await UserResponseModel.find({});
     
@@ -21,6 +22,20 @@ app.get("/UserResponse", async (req , res)=>{
         data : data
     })
 })
+
+app.delete("/DeleteUserResponse/:id" , async (req , res) => {
+  const id = req.params.id;
+  try {
+     const data = await UserResponseModel.findByIdAndDelete(id);
+     if (!data) {
+        return res.status(404).json({ message: "User response not found" });
+     }
+     res.status(200).json({ message: "User response deleted successfully" });
+  } catch (err) {
+     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 app.get("/UserResponse/:mail", async (req, res) => {
   const mail  = req.params.mail; // Access the mail parameter from the request
@@ -70,46 +85,50 @@ app.post('/UserResponse', async (req, res) => {
     };
 
     // Save user response to the database
+
+    // const data = await UserResponseModel.find({email : email});
+    // await UserResponseModel.findByIdAndDelete({_id : data._id })
     const newData = await UserResponseModel.create(newResponse);
     newData.save();
 
+
     // Making a GET request to sentiment analysis service after saving the user response
-    axios.get(`https://sentimentanalysis-rdb8.onrender.com/senti/sentimentAnalysis/0/${email}`)
-      .then(sentimentResponse => {
-        const {
-          'unique id': uniqueId,
-          name,
-          email,
-          suggestions,
-          sentiments_scores,
-          status
-        } = sentimentResponse.data;
+    // axios.get(`https://sentimentanalysis-rdb8.onrender.com/senti/sentimentAnalysis/0/${email}`)
+    //   .then(sentimentResponse => {
+    //     const {
+    //       'unique id': uniqueId,
+    //       name,
+    //       email,
+    //       suggestions,
+    //       sentiments_scores,
+    //       status
+    //     } = sentimentResponse.data;
 
-        // Construct sentiment object from the provided scores
-        const sentimentScores = sentiments_scores.map(sentiment => ({
-          label: sentiment.label,
-          score: sentiment.score
-        }));
+    //     // Construct sentiment object from the provided scores
+    //     const sentimentScores = sentiments_scores.map(sentiment => ({
+    //       label: sentiment.label,
+    //       score: sentiment.score
+    //     }));
 
-        const newReport = new reportModel({
-          uniqueId: uniqueId,
-          name: name,
-          email: email,
-          suggestions: suggestions,
-          sentiment_scores: sentimentScores, // Use sentiment_scores field
-          status: status
-        });
+    //     const newReport = new reportModel({
+    //       uniqueId: uniqueId,
+    //       name: name,
+    //       email: email,
+    //       suggestions: suggestions,
+    //       sentiment_scores: sentimentScores, // Use sentiment_scores field
+    //       status: status
+    //     });
 
-        // Save sentiment analysis report to the database
-        return newReport.save();
-      })
-      .then(() => {
-        res.status(201).json({ message: 'Data added successfully', data: newData });
-      })
-      .catch(error => {
-        console.error('Error fetching or saving sentiment analysis report:', error);
-        res.status(500).json({ message: 'Error processing sentiment analysis' });
-      });
+    //     // Save sentiment analysis report to the database
+    //     return newReport.save();
+    //   })
+    //   .then(() => {
+    //     res.status(201).json({ message: 'Data added successfully', data: newData });
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching or saving sentiment analysis report:', error);
+    //     res.status(500).json({ message: 'Error processing sentiment analysis' });
+    //   });
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ message: 'Internal server error' });
@@ -132,10 +151,6 @@ app.post('/getReport', async (req, res) => {
   }
 });
 
-
-
-
-
 app.delete("/deleteAllReports" , async (req,res)=>{
 
   reportModel.deleteMany({}).then(() => {
@@ -148,6 +163,7 @@ app.delete("/deleteAllReports" , async (req,res)=>{
     console.error('Error deleting records:', error);
   });
 })
+
 app.delete("/deleteAllResponse" , async (req,res)=>{
 
   UserResponseModel.deleteMany({}).then(() => {
@@ -245,6 +261,7 @@ app.post("/forum", async (req, res) => {
 });
 
 const BlogPost = require('./Model/Forum');
+const ComplaintModel = require("./Model/Complaint");
 
 // GET all blog posts
 app.get('/blog-posts/:Category', async (req, res) => {
@@ -299,9 +316,9 @@ async function getBlogPost(req, res, next) {
 }
 
 // DELETE a blog post
-app.delete('/blog-posts/:id', getBlogPost, async (req, res) => {
+app.delete('/blog-posts/:id', async (req, res) => {
     try {
-        await res.blogPost.remove();
+        await BlogPost.findByIdAndDelete({_id : req.params.id})
         res.json({ message: 'Deleted blog post' });
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -350,6 +367,70 @@ catch(err){
   })
 }
 })
+
+app.post("/addComplaint", async (req, res) => {
+  try {
+      const data = await ComplaintModel.create(req.body);
+      res.status(201).json({ message: "Complaint added successfully", data });
+  } catch (err) {
+      res.status(400).json({ message: err.message });
+  }
+});
+
+app.get("/complaint/:Status" , async (req, res)=>{
+  try {
+    const data = await ComplaintModel.find({status : req.params.Status});
+    res.status(200).json({
+      message : "complaint fetched successfully",
+      data : data
+    })
+  }
+  catch(err){
+    res.status(200).json({
+      message : "complaints cannot be fetched"
+    })
+  }
+})
+app.delete("/complaint/:id" , async (req, res)=>{
+  try {
+    const data = await ComplaintModel.findByIdAndDelete({_id : req.params.id});
+    res.status(200).json({
+      message : "complaint deleted successfully successfully",
+    })
+  }
+  catch(err){
+    res.status(200).json({
+      message : "complaints cannot be fetched"
+    })
+  }
+})
+app.patch("/complaint/:id/status", async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const updatedComplaint = await ComplaintModel.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedComplaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    res.status(200).json({
+      message: "Complaint status updated successfully",
+      data: updatedComplaint,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Failed to update complaint status",
+      error: err.message,
+    });
+  }
+});
+
 
 app.listen(3001, ()=>{
     console.log("port running at 3001")
