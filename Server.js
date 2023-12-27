@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt")
 const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
@@ -8,6 +9,7 @@ const reportModel = require("./Model/Report");
 const axios = require("axios");
 const QuestionModel = require("./Model/Question");
 const ForumModel = require("./Model/Forum");
+const passwordModel = require("./Model/Password");
 app.use(cors());
 
 mongoose
@@ -450,8 +452,7 @@ app.patch("/complaint/:id/status", async (req, res) => {
 });
 
 
-const bcrypt = require('bcrypt');
-const passwordModel = require("./Model/Password");
+
 
 app.post('/register', async (req, res) => {
   const { name, email, password, phoneNumber, gender } = req.body;
