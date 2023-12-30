@@ -1,4 +1,4 @@
-
+const Testimonial = require("./Router/Testimonial")
 const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
@@ -30,6 +30,13 @@ app.get("/UserResponse", async (req, res) => {
     data: data,
   });
 });
+
+
+//testimonial APIs
+app.get("/Testimonial" , Testimonial.getTestimonial)
+app.post("/Testimonial" , Testimonial.addTestimonial)
+app.delete("/Testimonial/:id" , Testimonial.deleteTestimonial)
+app.get("/Testimonial/:id" , Testimonial.getTestimonialById)
 
 //user Response apis
 app.get("/UserResponse/:mail", UserResponse.getResponseById);
