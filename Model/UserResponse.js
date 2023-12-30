@@ -15,6 +15,9 @@ const UserResponseSchema = mongoose.Schema({
   },
   responses: [],
   questions : [],
+  category : {
+    type : String
+  },
   Date : {
     type : Date,
     default : Date.now()

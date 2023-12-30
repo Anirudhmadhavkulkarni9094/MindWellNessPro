@@ -20,10 +20,11 @@ const getQuestions = async (req, res) => {
 
   const addQuestion = async (req, res) => {
     try {
-      const { Question, Category } = req.body; // Assuming you pass the question in the request body
+      const { Question, Category, Option } = req.body; // Assuming you pass the question in the request body
       const newQuestion = await QuestionModel.create({
         Question: Question,
         Category: Category,
+        Option: Option.split(",").map(option => option.trim()) // Splitting options into an array
       });
       res.status(201).json(newQuestion);
     } catch (err) {
@@ -31,6 +32,7 @@ const getQuestions = async (req, res) => {
       res.status(500).json({ error: "Failed to add question" });
     }
   }
+  
 
   const deleteQuestionbyId = async (req, res) => {
     try {

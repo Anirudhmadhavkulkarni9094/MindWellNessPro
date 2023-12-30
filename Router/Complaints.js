@@ -1,4 +1,4 @@
-const Complaint = require("../Model/Complaint");
+const ComplaintModel = require("../Model/Complaint");
 
 const addComplaint = async (req, res) => {
     try {
@@ -18,7 +18,7 @@ const addComplaint = async (req, res) => {
       });
     } catch (err) {
       res.status(200).json({
-        message: "complaints cannot be fetched",
+        message: "complaints cannot be fetched"  + err,
       });
     }
   }

@@ -48,13 +48,14 @@ const  deleteAllResponse =  async (req, res) => {
 
 const addUserResponse = async (req, res) => {
     try {
-      const { name, email, age, responses, questions } = req.body;
+      const { name, email, age, responses, questions  , category} = req.body;
       const newResponse = {
         name: name,
         email: email.toLowerCase(),
         age: age,
         responses: responses,
         questions: questions,
+        category : category
       };
   
       // Check if data with the provided email exists, then delete it

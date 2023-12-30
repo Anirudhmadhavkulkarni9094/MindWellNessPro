@@ -8,6 +8,10 @@ const QuestionSchema = mongoose.Schema({
     Category : {
         type : String,
         required: true
+    },
+    Option : {
+        type : [String],
+        required : true
     }
 })
 

@@ -90,6 +90,10 @@ app.post("/blog-posts/:id/comment", getBlogPost, BlogPost.addCommentToBlog);
 // COMPLAINT APIs
 app.post("/addComplaint", Complaints.addComplaint);
 app.get("/complaint/:Status", Complaints.getComplaintsByStatus);
+app.get("/complaints" , async (req,res)=>{
+   const data = await ComplaintModel.find({});
+   res.send(data)
+})
 app.delete("/complaint/:id",Complaints.deleteComplaintById);
 app.patch("/complaint/:id/status", Complaints.updateComplaintStatus);
 
@@ -105,6 +109,7 @@ app.get("/getAdmin" , UserLoginAndSignUp.fetchAllAdmin);
 const admin = require('firebase-admin');
 const serviceAccount = require('./mindwellnesspro-123-firebase-adminsdk-dx76c-fbff8c0699.json');
 const multer = require('multer');
+const ComplaintModel = require("./Model/Complaint");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
