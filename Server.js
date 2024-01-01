@@ -97,8 +97,9 @@ app.post("/blog-posts/:id/comment", getBlogPost, BlogPost.addCommentToBlog);
 // COMPLAINT APIs
 app.post("/addComplaint", Complaints.addComplaint);
 app.get("/complaint/:Status", async (req, res) => {
+  let status = req.params.Status.slice(0,1).toUpperCase()+req.params.Status.slice(1).toLowerCase();
   try {
-    const data = await ComplaintModel.find({ status: req.params.Status });
+    const data = await ComplaintModel.find({ status: status });
     res.status(200).json({
       message: "complaint fetched successfully",
       data: data,
