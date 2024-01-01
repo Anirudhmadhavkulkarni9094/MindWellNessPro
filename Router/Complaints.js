@@ -9,19 +9,7 @@ const addComplaint = async (req, res) => {
     }
   }
 
-  const getComplaintsByStatus = async (req, res) => {
-    try {
-      const data = await ComplaintModel.find({ status: req.params.Status });
-      res.status(200).json({
-        message: "complaint fetched successfully",
-        data: data,
-      });
-    } catch (err) {
-      res.status(200).json({
-        message: "complaints cannot be fetched"  + err,
-      });
-    }
-  }
+  // const getComplaintsByStatus = 
   const deleteComplaintById =  async (req, res) => {
     try {
       const data = await ComplaintModel.findByIdAndDelete({ _id: req.params.id });
@@ -64,7 +52,7 @@ const addComplaint = async (req, res) => {
 
 module.exports = {
     addComplaint,
-    getComplaintsByStatus,
+    // getComplaintsByStatus,
     deleteComplaintById,
     updateComplaintStatus
 

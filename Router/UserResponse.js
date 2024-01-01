@@ -52,10 +52,10 @@ const addUserResponse = async (req, res) => {
       const newResponse = {
         name: name,
         email: email.toLowerCase(),
+        category : category,
         age: age,
-        responses: responses,
         questions: questions,
-        category : category
+        responses: responses,
       };
   
       // Check if data with the provided email exists, then delete it

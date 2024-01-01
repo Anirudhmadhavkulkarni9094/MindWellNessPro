@@ -96,7 +96,19 @@ app.post("/blog-posts/:id/comment", getBlogPost, BlogPost.addCommentToBlog);
 
 // COMPLAINT APIs
 app.post("/addComplaint", Complaints.addComplaint);
-app.get("/complaint/:Status", Complaints.getComplaintsByStatus);
+app.get("/complaint/:Status", async (req, res) => {
+  try {
+    const data = await ComplaintModel.find({ status: req.params.Status });
+    res.status(200).json({
+      message: "complaint fetched successfully",
+      data: data,
+    });
+  } catch (err) {
+    res.status(200).json({
+      message: "complaints cannot be fetched"  + err,
+    });
+  }
+});
 app.get("/complaints" , async (req,res)=>{
    const data = await ComplaintModel.find({});
    res.send(data)
