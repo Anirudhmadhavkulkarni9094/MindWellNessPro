@@ -103,6 +103,7 @@ app.get("/complaint/:Status", async (req, res) => {
     res.status(200).json({
       message: "complaint fetched successfully",
       data: data,
+      status  : status
     });
   } catch (err) {
     res.status(200).json({
