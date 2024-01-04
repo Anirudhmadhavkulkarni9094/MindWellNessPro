@@ -17,7 +17,7 @@ const reportSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    sentiment_scores: [{
+    sentiments_scores: [{
         label: String,
         score: Number
     }],

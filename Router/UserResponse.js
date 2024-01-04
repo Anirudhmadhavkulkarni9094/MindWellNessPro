@@ -46,83 +46,10 @@ const  deleteAllResponse =  async (req, res) => {
       });
   }
 
-const addUserResponse = async (req, res) => {
-    try {
-      const { name, email, age, responses, questions  , category} = req.body;
-      const newResponse = {
-        name: name,
-        email: email.toLowerCase(),
-        category : category,
-        age: age,
-        questions: questions,
-        responses: responses,
-      };
-  
-      // Check if data with the provided email exists, then delete it
-      const existingData = await UserResponseModel.findOneAndDelete({ email: email });
-  
-      console.log(existingData); // Log the deleted data if found
-  
-      // Save user response to the database
-      const newData = await UserResponseModel.create(newResponse);
-      newData.save();
-  
-      // Making a GET request to sentiment analysis service after saving the user response
-      axios
-        .get(
-          `https://sentimentanalysis-rdb8.onrender.com/senti/sentimentAnalysis/0/${email}`
-        )
-        .then((sentimentResponse) => {
-          const {
-            "unique id": uniqueId,
-            name,
-            email,
-            suggestions,
-            sentiments_scores,
-            status,
-          } = sentimentResponse.data;
-  
-          // Construct sentiment object from the provided scores
-          const sentimentScores = sentiments_scores.map((sentiment) => ({
-            label: sentiment.label,
-            score: sentiment.score,
-          }));
-  
-          const newReport = new reportModel({
-            uniqueId: uniqueId,
-            name: name,
-            email: email,
-            suggestions: suggestions,
-            sentiment_scores: sentimentScores, // Use sentiment_scores field
-            status: status,
-          });
-  
-          // Save sentiment analysis report to the database
-          return newReport.save();
-        })
-        .then(() => {
-          res
-            .status(201)
-            .json({ message: "Data added successfully", data: newData });
-        })
-        .catch((error) => {
-          console.error(
-            "Error fetching or saving sentiment analysis report:",
-            error
-          );
-          res
-            .status(500)
-            .json({ message: "Error processing sentiment analysis" });
-        });
-    } catch (err) {
-      console.error("Error:", err);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
-
+// const addUserResponse = 
 module.exports = {
     getResponseById,
     deleteResponseById,
     deleteAllResponse,
-    addUserResponse
+    // addUserResponse
 }
