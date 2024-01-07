@@ -46,24 +46,26 @@ app.delete("/UserResponse/:id", UserResponse.deleteResponseById);
 app.delete("/deleteAllResponse", UserResponse.deleteAllResponse);
 app.post("/UserResponse", async (req, res) => {
   try {
-    const { name, email, age, responses, questions, category, id } = req.body;
+    const { name, email, age, responses, questions  , category , id} = req.body;
     const newResponse = {
       name: name,
       email: email.toLowerCase(),
-      category: category,
+      category : category,
       age: age,
-      id: id,
+      id : id,
       questions: questions,
       responses: responses,
     };
-
-    // Save user response to the database
     const newData = await UserResponseModel.create(newResponse);
+    newData.save();
 
     // Making a GET request to sentiment analysis service after saving the user response
     axios
-      .get(`https://sentimentanalysis-rdb8.onrender.com/senti/sentimentAnalysis/${id}/${email}`)
+      .get(
+        `https://sentimentanalysis-rdb8.onrender.com/senti/sentimentAnalysis/1/${email}`
+      )
       .then((sentimentResponse) => {
+        console.log(sentimentResponse.data)
         const {
           "unique id": uniqueId,
           name,
@@ -74,11 +76,12 @@ app.post("/UserResponse", async (req, res) => {
         } = sentimentResponse.data;
 
         // Construct sentiment object from the provided scores
-        const sentimentScores = sentiments_scores.map((sentiment) => ({
+        const sentimentScores = sentiments_scores[0].map((sentiment) => ({
           label: sentiment.label,
           score: sentiment.score,
         }));
 
+        console.log(sentiments_scores)
         const newReport = new reportModel({
           uniqueId: uniqueId,
           name: name,
@@ -88,21 +91,30 @@ app.post("/UserResponse", async (req, res) => {
           status: status,
         });
 
+        console.log(newResponse)
         // Save sentiment analysis report to the database
         return newReport.save();
       })
       .then(() => {
-        res.status(201).json({ message: "Data added successfully", data: newData });
+        res
+          .status(201)
+          .json({ message: "Data added successfully", data: newData });
       })
       .catch((error) => {
-        console.error("Error fetching or saving sentiment analysis report:", error);
-        res.status(500).json({ message: "Error processing sentiment analysis" });
+        console.error(
+          "Error fetching or saving sentiment analysis report:",
+          error
+        );
+        res
+          .status(500)
+          .json({ message: "Error processing sentiment analysis" });
       });
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
-});
+}
+);
 
 // Report apis
 app.get("/getReports/:mail/:id", Report.getReportByMailAndID);
