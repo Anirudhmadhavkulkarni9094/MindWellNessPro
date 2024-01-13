@@ -2,7 +2,7 @@ const TestimonialModel  = require("../Model/Testimonial")
 
 const getTestimonial = async (req , res)=>{
     try{
-        const data = await TestimonialModel.find({});
+        const data = await TestimonialModel.find({}).limit(6);
         res.status(200).json({
             message : "Testimonial fetched Successfully",
             data : data
