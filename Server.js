@@ -13,7 +13,10 @@ const Question = require("./Router/Question");
 const Forum = require("./Router/Forum");
 const Complaints = require("./Router/Complaints");
 const BlogPost =  require("./Router/BlogPost");
+const suggestionModel = require("./Model/Suggestions");
+
 const UserLoginAndSignUp = require("./Router/UserLoginAndSignUp")
+// const Suggestions = require("../Server/Router/Suggestions")
 app.use(cors());
 
 mongoose
@@ -217,6 +220,7 @@ const admin = require('firebase-admin');
 const serviceAccount = require('./mindwellnesspro-123-firebase-adminsdk-dx76c-fbff8c0699.json');
 const multer = require('multer');
 const ComplaintModel = require("./Model/Complaint");
+// const { default: Suggestions } = require("../client/src/Components/Suggestions/Suggestions");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -261,7 +265,29 @@ app.post('/upload-image', upload.single('image'), async (req, res) => {
   }
 });
 
-app.listen(3001, () => {
+
+app.post("/Suggestions", async (req, res) => {
+  try {
+      // Create a new instance of the suggestion model with the request body
+      const newData = await  suggestionModel.create(req.body);
+
+      // Save the new suggestion to the database
+      
+
+      res.status(200).json({
+          message: "Suggestion uploaded successfully",
+          data: newData
+      });
+  } catch (err) {
+      res.status(500).json({
+          message: "Suggestion upload unsuccessful",
+          error: err.message
+      });
+  }
+})
+
+
+app.listen(3002, () => {
   console.log("port running at 3001");
 });
 // anirudhkulkarni9094
