@@ -286,6 +286,26 @@ app.post("/Suggestions", async (req, res) => {
   }
 })
 
+app.get("/suggestions" , async (req,res)=>{
+  try {
+    // Create a new instance of the suggestion model with the request body
+    const newData = await  suggestionModel.find({});
+
+    // Save the new suggestion to the database
+    
+
+    res.status(200).json({
+        message: "Suggestion uploaded successfully",
+        data: newData
+    });
+} catch (err) {
+    res.status(500).json({
+        message: "Suggestion upload unsuccessful",
+        error: err.message
+    });
+}
+})
+
 
 app.listen(3002, () => {
   console.log("port running at 3001");
